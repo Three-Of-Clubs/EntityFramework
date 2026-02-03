@@ -1,0 +1,18 @@
+{
+    "name": "EntityFramework.Utils.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d2eaad4a471c619438625c6605bd2842"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

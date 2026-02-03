@@ -1,0 +1,16 @@
+{
+    "name": "EntityFramework",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d2eaad4a471c619438625c6605bd2842"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
