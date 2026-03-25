@@ -173,7 +173,7 @@ namespace EntityFramework
 
 		public static EntitySceneMap GetSceneMapIn(Scene scene)
 		{
-			if (!scene.IsValid() || !scene.isLoaded)
+			if (!scene.IsValid())
 				return null;
 
 			GameObject[] rootObjs = scene.GetRootGameObjects();
