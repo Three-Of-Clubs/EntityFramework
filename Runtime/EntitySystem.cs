@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,6 +14,8 @@ namespace EntityFramework
 {
 	public static class EntitySystem
 	{
+		static Dictionary<EntityID, List<Action<Entity>>> deferredEntityActions = new Dictionary<EntityID, List<Action<Entity>>>();
+
 		#region getters
 		public static Entity Get(EntityID id)
 		{
@@ -22,18 +25,8 @@ namespace EntityFramework
 			Scene scene = EntityIDsManager.Instance.GetScene(id.IDScene);
 			EntitySceneMap sceneMap = GetSceneMapIn(scene);
 
-			GameObject obj = new GameObject();
-			Truc truc = obj.AddComponent<Truc>();
-
-			Object.DestroyImmediate(obj);
-
-			truc.transform.position = Vector3.one;
-			truc.value = 18;
-
 			return sceneMap ? sceneMap.Get(id) : default;
 		}
-
-		class Truc : MonoBehaviour { public int value; }
 
 		public static T Get<T>(EntityID id) where T : IEntity
 		{
@@ -172,6 +165,7 @@ namespace EntityFramework
 		}
 		#endregion
 
+		#region scene maps
 		static EntitySceneMap GetSceneMapOf(EntityBehaviour entity)
 		{
 			return GetSceneMapIn(entity.gameObject.scene);
@@ -179,6 +173,9 @@ namespace EntityFramework
 
 		public static EntitySceneMap GetSceneMapIn(Scene scene)
 		{
+			if (!scene.IsValid() || !scene.isLoaded)
+				return null;
+
 			GameObject[] rootObjs = scene.GetRootGameObjects();
 
 			foreach (GameObject obj in rootObjs)
@@ -189,5 +186,35 @@ namespace EntityFramework
 
 			return null;
 		}
+		#endregion
+
+		#region instances management
+		internal static void OnEntityAwoken(EntityBehaviour entity)
+		{
+			if (!deferredEntityActions.TryGetValue(Get(entity), out List<Action<Entity>> callbacks))
+				return;
+
+			foreach (Action<Entity> callback in callbacks)
+			{
+				callback(entity);
+
+				if (!entity)
+					break;
+			}
+		}
+
+		internal static void OnEntityDestroyed(EntityBehaviour entity)
+		{
+			deferredEntityActions.Remove(Get(entity));
+		}
+
+		internal static void Defer(Action<Entity> action, EntityID id)
+		{
+			if (!deferredEntityActions.ContainsKey(id))
+				deferredEntityActions.Add(id, new());
+
+			deferredEntityActions[id].Add(action);
+		}
+		#endregion
 	}
 }
